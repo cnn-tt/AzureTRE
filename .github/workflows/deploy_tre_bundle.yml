@@ -1,14 +1,9 @@
 ---
-name: Deploy Azure TRE
+name: Deploy Azure TRE (Bundle)
 # This workflow is the integration build run for pushes to the main branch
 # It also runs on a schedule, serving as the nightly build
 
-on:  # yamllint disable-line rule:truthy
-  # schedule:
-    # midnight every day https://crontab.guru/#0_0_*_*_*
-    # - cron: "0 0 * * *"
-  # push:
-  #   branches: [main]
+on: # yamllint disable-line rule:truthy
   workflow_dispatch:
     inputs:
       environment:
@@ -16,20 +11,43 @@ on:  # yamllint disable-line rule:truthy
         type: environment
         default: Dev
         required: true
+      bundleType:
+        type: choice
+        description: Bundle Type
+        options:
+          - workspace
+          - workspace_service
+          - user_resource
+          - shared_service
+      bundleDir:
+        type: choice
+        description: Bundle Dir
+        options:
+          - workspaces
+          - workspace_services
+          - user_resources
+          - shared_services
+      bundleName:
+        type: string
+        description: Bundle Name
+
+      # bundleDir:
+      #   type: string
+      #   description: Bundle Directory e.g. ./templates/workspaces/base
+      #   default: ./templates/stable/workspaces/airlock-import-review
+      workspaceName:
+        type: string
+        description: Workspace Name (Required if type is user_resource) tre-service-...
 
 # This will prevent multiple runs of this entire workflow.
 # We should NOT cancel in progress runs as that can destabilize the environment.
 concurrency: "${{ github.workflow }}-${{ github.ref }}"
 
 jobs:
-  run-deploy-tre-main:
-    name: "Deploy main"
-    if: github.ref == 'refs/heads/main'
-    uses: ./.github/workflows/deploy_tre_reusable.yml
-    permissions:
-      checks: write
-      contents: read
-      pull-requests: write
+  run-deploy-tre-bundle:
+    name: "Deploy Bundle"
+    # if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development'
+    uses: ./.github/workflows/deploy_tre_reusable_bundle.yml
     with:
       ciGitRef: ${{ github.ref }}
       e2eTestsCustomSelector: >-
@@ -37,7 +55,10 @@ jobs:
         || 'extended or extended_aad or shared_services or airlock' }}
       environmentName: ${{ github.event.inputs.environment || 'CICD' }}
       E2E_TESTS_NUMBER_PROCESSES: 1
-      DEVCONTAINER_TAG: 'latest'
+      DEVCONTAINER_TAG: "latest"
+      bundleType: ${{ inputs.bundleType }}
+      bundleDir: "./templates/${{ inputs.bundleDir }}/${{ inputs.bundleName }}"
+      workspaceName: ${{ inputs.workspaceName }}
     secrets:
       AAD_TENANT_ID: ${{ secrets.AAD_TENANT_ID }}
       ACR_NAME: ${{ secrets.ACR_NAME }}
