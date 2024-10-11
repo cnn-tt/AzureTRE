@@ -26,6 +26,8 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
           environment: ${{ (secrets.AZURE_ENVIRONMENT != '' && secrets.AZURE_ENVIRONMENT) || 'AzureCloud' }}
 
+      - name: Update script permissions
+        run: git update-index --chmod=+x .github/scripts/clean_ci_validation_envs.sh
 
       - name: Run clean
         env:
