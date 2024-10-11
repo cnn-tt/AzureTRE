@@ -26,6 +26,7 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
           environment: ${{ (secrets.AZURE_ENVIRONMENT != '' && secrets.AZURE_ENVIRONMENT) || 'AzureCloud' }}
 
+
       - name: Run clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
