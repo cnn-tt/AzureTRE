@@ -26,11 +26,11 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
           environment: ${{ (secrets.AZURE_ENVIRONMENT != '' && secrets.AZURE_ENVIRONMENT) || 'AzureCloud' }}
 
-      - name: Run clean
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MAIN_TRE_ID: ${{ secrets.TRE_ID }}
-          GITHUB_REPOSITORY: ${{ github.repository}}
-          BRANCH_LAST_ACTIVITY_IN_HOURS_FOR_STOP: 2
-          BRANCH_LAST_ACTIVITY_IN_HOURS_FOR_DESTROY: 48
-        run: .github/scripts/clean_ci_validation_envs.sh
+      # - name: Run clean
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     MAIN_TRE_ID: ${{ secrets.TRE_ID }}
+      #     GITHUB_REPOSITORY: ${{ github.repository}}
+      #     BRANCH_LAST_ACTIVITY_IN_HOURS_FOR_STOP: 2
+      #     BRANCH_LAST_ACTIVITY_IN_HOURS_FOR_DESTROY: 48
+      #   run: .github/scripts/clean_ci_validation_envs.sh
